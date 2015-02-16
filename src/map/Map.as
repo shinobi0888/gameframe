@@ -12,9 +12,10 @@ package map {
 	public class Map {
 		// Layer IDs
 		public static const L_GROUND:int = 0;
-		public static const L_CHAR:int = 1;
-		public static const L_OVERHEAD:int = 2;
-		public static const L_AIR:int = 3;
+		public static const L_EVENT:int = 1;
+		public static const L_CHAR:int = 2;
+		public static const L_OVERHEAD:int = 3;
+		public static const L_AIR:int = 4;
 		
 		private var name:String;
 		private var filename:String;

@@ -8,6 +8,8 @@ package resource {
 		public static var maps_mp_test_txt:Class;
 		[Embed(source="../assets/portraits/bulbasaur.png")]
 		public static var portraits_bulbasaur_png:Class;
+		[Embed(source="../assets/portraits/ivysaur.png")]
+		public static var portraits_ivysaur_png:Class;
 		[Embed(source="../assets/sprites/sp_link.png")]
 		public static var sprites_sp_link_png:Class;
 		[Embed(source="../assets/sprites/sp_link.txt",mimeType="application/octet-stream")]
@@ -16,6 +18,8 @@ package resource {
 		public static var sprites_sp_test_png:Class;
 		[Embed(source="../assets/sprites/sp_test.txt",mimeType="application/octet-stream")]
 		public static var sprites_sp_test_txt:Class;
+		[Embed(source="../assets/tests/scp_test.txt",mimeType="application/octet-stream")]
+		public static var tests_scp_test_txt:Class;
 		[Embed(source="../assets/tests/test.png")]
 		public static var tests_test_png:Class;
 		[Embed(source="../assets/tests/test2.png")]
@@ -34,7 +38,7 @@ package resource {
 		private static const RESOURCE_PATH:String = "../src/assets/";
 		
 		public static function pathToClass(path:String):Class {
-			return Embeds[path.substr(RESOURCE_PATH.length).replace("/", "_").replace(".",
+			return Embeds[path.substr(RESOURCE_PATH.length).replace(/\//g, "_").replace(/\./g,
 				"_")] as Class;
 		}
 	}

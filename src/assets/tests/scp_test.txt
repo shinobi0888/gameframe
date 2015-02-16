@@ -1,0 +1,11 @@
+dlg_start bulbasaur bulbasaur
+dlg_choice $tempvar1$~Electrode;Diglett;Nidoran;Mankey;Venusaur;Ratatta;Fearow;Pidgey~Choose a choice the quick brown fox jumps over the lazy dog Electrode:
+if $tempvar1$ == Diglett
+	dlg_text Isn't that the cutest word ever?
+else
+	dlg_text Hi, $tempvar1$. This is a Bulbasaur. It is a Pokemon. Welcome to the world of Pokemon! My name is Prof. Oak. People know me as the Pokemon Professor Lalalal Text aaaaaaaaaaaaaaaaaaaaa
+	dlg_lfc ivysaur
+	dlg_rfc ivysaur
+	dlg_text These are Ivysaurs, the evolved forms of Bulbasaur. The bulb on its back has developed into a sturdier plant, forcing it to use its hindlegs to support its weight.
+	dlg_end
+endif

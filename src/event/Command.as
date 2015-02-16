@@ -1,5 +1,7 @@
 package event {
 	import dialogue.Dialogue;
+	import mx.utils.StringUtil;
+	import resource.SaveMem;
 	
 	/**
 	 * Represents a command in an NPC script.
@@ -12,9 +14,19 @@ package event {
 		public function Command() {
 		}
 		
+		/**
+		 * Takes a string representation of multiple commands and parses it
+		 * into a single block command.
+		 * @param	commands The string representation of all commands in an
+		 * event.
+		 * @return The BlockCommand representing the entire event.
+		 */
 		public static function parseAllCommands(commands:String):BlockCommand {
 			// TODO: handle comments, multiline, etc
 			var lines:Array = commands.split("\n");
+			for (var i:int = 0; i < lines.length; i++) {
+				lines[i] = StringUtil.trim(lines[i]);
+			}
 			var result:BlockCommand = new BlockCommand();
 			while (lines.length > 0) {
 				result.addCommand(parseCommand(lines));
@@ -43,9 +55,11 @@ package event {
 				while (commandStrings[0] != "else") {
 					body.addCommand(parseCommand(commandStrings));
 				}
+				commandStrings.shift();
 				while (commandStrings[0] != "endif") {
 					body2.addCommand(parseCommand(commandStrings));
 				}
+				commandStrings.shift();
 				return new ConditionalCommand(cond, body, body2);
 			} else if (headString.substr(0, 5) == "while") {
 				cond = Condition.parseCondition(headString.substr(6));
@@ -53,6 +67,7 @@ package event {
 				while (commandStrings[0] != "endwhile") {
 					body.addCommand(parseCommand(commandStrings));
 				}
+				commandStrings.shift();
 				return new LoopCommand(cond, body);
 			}
 			// Check for single commands
@@ -84,6 +99,33 @@ package event {
 				case CommandConst.DLG_TEXT:
 					Dialogue.showText(resolveText(params[0]), callback);
 					break;
+				case CommandConst.DLG_LFI:
+					Dialogue.leftFadeIn(resolveText(params[0]), callback);
+					break;
+				case CommandConst.DLG_RFI:
+					Dialogue.rightFadeIn(resolveText(params[0]), callback);
+					break;
+				case CommandConst.DLG_LFC:
+					Dialogue.leftFadeCross(resolveText(params[0]), callback);
+					break;
+				case CommandConst.DLG_RFC:
+					Dialogue.rightFadeCross(resolveText(params[0]), callback);
+					break;
+				case CommandConst.DLG_LFO:
+					Dialogue.leftFadeOut(callback);
+					break;
+				case CommandConst.DLG_RFO:
+					Dialogue.rightFadeOut(callback);
+					break;
+				case CommandConst.DLG_CHOICE:
+					Dialogue.showChoice(params[2], params[1], params[0] == null ? callback :
+						function():void {
+							SaveMem.setVar(params[0].replace(/\$/g,""), Dialogue.getChoice());
+							if (callback != null) {
+								callback();
+							}
+						});
+					break;
 				default:
 					if (callback != null) {
 						callback();
@@ -97,10 +139,33 @@ package event {
 		 * @return The resolved text, with variables swapped out.
 		 */
 		private function resolveText(text:String):String {
-			// TODO: swap out variables
+			var beforeText:String = null;
+			while (beforeText != text) {
+				beforeText = text;
+				for (var i:int = 0; i < text.length; i++) {
+					if (text.charAt(i) == "$") {
+						var varEnd:int = text.indexOf("$", i+1);
+						var varName:String = text.substr(i + 1, varEnd == -1 ? text.length :
+							(varEnd - (i + 1)));
+						if (SaveMem.existsVar(varName)) {
+							var afterVar:String = text.substr(varEnd+1);
+							text = text.substr(0, i) + SaveMem.getVar(varName);
+							varEnd = text.length;
+							text += afterVar;
+						}
+						i = varEnd;
+					}
+				}
+			}
 			return text;
 		}
 		
+		/**
+		 * Adds all dependencies of this command and all subcommands
+		 * into the dependency set.
+		 * @param	deps A set of dependencies (mapped to by key) that will
+		 * be added to.
+		 */
 		public function addDependencies(deps:Object):void {
 			CommandConst.addDependencies(deps, commandNumber, params);
 		}

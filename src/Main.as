@@ -27,7 +27,7 @@ package {
 	public class Main extends Sprite {
 		public function Main():void {
 			Init.init(this, function():void {
-					CommandTest.run(stage);
+					WalkingDemo.run(stage);
 					setUpFPSTimer();
 				});
 		}

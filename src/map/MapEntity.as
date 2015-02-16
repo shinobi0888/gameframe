@@ -2,6 +2,7 @@ package map {
 	import flash.display.BitmapData;
 	import flash.geom.Point;
 	import flash.utils.getTimer;
+	import resource.Pattern;
 	import resource.sprite.Sprite;
 	import resource.sprite.SpriteBase;
 	import settings.DisplaySettings;
@@ -39,14 +40,7 @@ package map {
 			this.gridX = gridX;
 			this.gridY = gridY;
 			visible = true;
-			this.occupiedCells = new Array();
-			if (occupiedCells != null) {
-				for each (var cell:Point in occupiedCells) {
-					this.occupiedCells.push(cell);
-				}
-			} else {
-				this.occupiedCells.push(new Point(0, 0));
-			}
+			this.occupiedCells = occupiedCells == null ? Pattern.getPattern("single"):occupiedCells;
 			sprite = SpriteBase.getInstance(spriteName);
 		}
 		

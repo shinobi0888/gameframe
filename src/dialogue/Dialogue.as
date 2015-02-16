@@ -480,7 +480,7 @@ package dialogue {
 				}
 				message += piece;
 			}
-			message = message.replace("\n", "");
+			message = message.replace(/[\u000d\u000a\u0008]+/g,"");
 			for each (var choice:String in choices) {
 				message += "\n" + StringUtil.trim(choice);
 			}

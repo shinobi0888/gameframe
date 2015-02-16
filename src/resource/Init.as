@@ -22,7 +22,7 @@ package resource {
 		}
 		
 		private static function initStatics(main:Main, callback:Function = null):void {
-			var loadClasses:Array = [CommandConst, Dialogue, Text, MapCamera, SaveMem];
+			var loadClasses:Array = [CommandConst, Pattern, Dialogue, Text, MapCamera, SaveMem];
 			var initFn:Function = function():void {
 				if (loadClasses.length == 0) {
 					if (callback != null) {

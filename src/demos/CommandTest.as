@@ -8,6 +8,7 @@ package demos {
 	import flash.events.Event;
 	import flash.system.System;
 	import resource.Image;
+	import resource.TextAsset;
 	import settings.DisplaySettings;
 	
 	/**
@@ -19,7 +20,7 @@ package demos {
 			var stageData:BitmapData = new BitmapData(DisplaySettings.DISP_WIDTH, DisplaySettings.DISP_HEIGHT);
 			var stageBitmap:Bitmap = new Bitmap(stageData);
 			stage.addChild(stageBitmap);
-			var cmd:BlockCommand = Command.parseAllCommands("dlg_start bulbasaur bulbasaur\ndlg_text Hello World!\ndlg_end");
+			var cmd:BlockCommand = Command.parseAllCommands(TextAsset.load("../src/assets/tests/scp_test.txt"));
 			var images:Array = cmd.listDependencies();
 			Image.loadAll(images);
 			cmd.execute(null, function():void {

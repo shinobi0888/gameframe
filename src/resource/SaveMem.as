@@ -28,7 +28,7 @@ package resource {
 		 */
 		public static function setVar(name:String, val:Object):Object {
 			if (val is String) {
-				return gameVarsStr[name] = String(val).replace("\n", "");
+				return gameVarsStr[name] = String(val).replace(/[\u000d\u000a\u0008]+/g,"");
 			} else if (val is int) {
 				return gameVarsInt[name] = val;
 			} else if (val is Boolean) {
@@ -46,6 +46,11 @@ package resource {
 			return gameVarsStr.hasOwnProperty(name) ? gameVarsStr[name] : (gameVarsInt.hasOwnProperty(name) ?
 				gameVarsInt[name] : gameVarsBool.hasOwnProperty(name) ? gameVarsBool[name] :
 				null);
+		}
+		
+		public static function existsVar(name:String):Boolean {
+			return gameVarsStr.hasOwnProperty(name) || gameVarsInt.hasOwnProperty(name) ||
+				gameVarsBool.hasOwnProperty(name);
 		}
 		
 		private static function saveVars(saveLines:Array):void {
