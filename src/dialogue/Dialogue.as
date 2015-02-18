@@ -601,7 +601,7 @@ class DialogueAction {
 			case T_DISP_TXT_CONT:
 				if (state >= 0) {
 					state++;
-					if (initData.charAt(int(state / DialogueAction.LETTER_TIME)) == " ") {
+					while (initData.charAt(int(state / DialogueAction.LETTER_TIME)) == " ") {
 						state += LETTER_TIME;
 					}
 					if (state >= initData.length * LETTER_TIME) {
@@ -617,7 +617,7 @@ class DialogueAction {
 			case T_DISP_CHOICE:
 				if (state >= 0) {
 					state++;
-					if (initData.charAt(int(state / DialogueAction.LETTER_TIME)) == " ") {
+					while (initData.charAt(int(state / DialogueAction.LETTER_TIME)) == " ") {
 						state += LETTER_TIME;
 					}
 					if (state >= initData.length * LETTER_TIME) {
