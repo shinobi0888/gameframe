@@ -9,19 +9,19 @@ package map {
 	 * @author shinobi0888
 	 */
 	public class WalkingMapEntity extends MapEntity {
-		public static const UP:int = 0;
-		public static const RIGHT:int = 1;
-		public static const DOWN:int = 2;
-		public static const LEFT:int = 3;
-		private static const DIR_STRINGS:Array = ["up", "right", "down", "left"];
-		private static const DIR_XCHANGE:Array = [0, 1, 0, -1];
-		private static const DIR_YCHANGE:Array = [-1, 0, 1, 0];
+		public static const UP:int = 1;
+		public static const RIGHT:int = 2;
+		public static const DOWN:int = 3;
+		public static const LEFT:int = 0;
+		private static const DIR_STRINGS:Array = ["left", "up", "right", "down"];
+		protected static const DIR_XCHANGE:Array = [-1, 0, 1, 0];
+		protected static const DIR_YCHANGE:Array = [0, -1, 0, 1];
 		
-		private var dir:int;
+		protected var dir:int;
 		private var shouldStopWalk:Boolean;
 		private var stopCallback:Function;
-		private var inLoop:Boolean;
-		private var inStep:Boolean;
+		protected var inLoop:Boolean;
+		protected var inStep:Boolean;
 		
 		public function WalkingMapEntity(containingMap:Map, spriteName:String, gridX:int,
 			gridY:int, layer:int, occupiedCells:Array = null) {

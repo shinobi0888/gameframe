@@ -21,7 +21,7 @@ package map {
 		
 		// Variables for drawing and animation
 		protected var sprite:Sprite;
-		protected var visible:Boolean;
+		protected var enabled:Boolean;
 		
 		// Map related properties
 		protected var gridX:int, gridY:int;
@@ -39,9 +39,12 @@ package map {
 			containingMap.add(this, layer);
 			this.gridX = gridX;
 			this.gridY = gridY;
-			visible = true;
-			this.occupiedCells = occupiedCells == null ? Pattern.getPattern("single"):occupiedCells;
-			sprite = SpriteBase.getInstance(spriteName);
+			enabled = true;
+			this.occupiedCells = occupiedCells == null ? Pattern.getPattern("single") :
+				occupiedCells;
+			if (spriteName != null) {
+				sprite = SpriteBase.getInstance(spriteName);
+			}
 		}
 		
 		/**
@@ -52,7 +55,7 @@ package map {
 		 * @param	cameraY The y position of the camera.
 		 */
 		public function draw(canvas:BitmapData, cameraX:int, cameraY:int):void {
-			if (!visible) {
+			if (!enabled) {
 				return;
 			}
 			var aniOffset:Point = sprite.getAnimationOffset();
@@ -98,10 +101,6 @@ package map {
 			signalMove(oldX, oldY, gridX, gridY);
 		}
 		
-		public function setVisible(visible:Boolean):void {
-			this.visible = visible;
-		}
-		
 		/**
 		 * Checks if a given position on a map collides with this
 		 * MapEntity.
@@ -110,6 +109,9 @@ package map {
 		 * @return True if the point collides with this MapEntity.
 		 */
 		public function checkCollision(xPos:int, yPos:int):Boolean {
+			if (!enabled) {
+				return false;
+			}
 			for each (var cell:Point in occupiedCells) {
 				if (xPos == cell.x + this.gridX && yPos == cell.y + this.gridY) {
 					return true;
@@ -129,6 +131,9 @@ package map {
 		 * @return True if there is no collision.
 		 */
 		public function checkEntityCollision(entity:MapEntity, xShift:int = 0, yShift:int = 0):Boolean {
+			if (!enabled || !entity.enabled) {
+				return false;
+			}
 			for each (var cell:Point in occupiedCells) {
 				if (entity.checkCollision(cell.x + gridX + xShift, cell.y + gridY + yShift)) {
 					return true;
@@ -164,7 +169,15 @@ package map {
 				return;
 			}
 			processInner(time);
-		}	
+		}
+		
+		public function disableProcessing():void {
+			nextProcessTime = int.MAX_VALUE;
+		}
+		
+		public function enableProcessing():void {
+			nextProcessTime = -1;
+		}
 		
 		/**
 		 * Internal processing that should be overridden by subclasses for

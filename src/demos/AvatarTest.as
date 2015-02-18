@@ -8,6 +8,7 @@ package demos {
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 	import map.CenteredWalkingMapEntity;
+	import map.entities.Avatar;
 	import map.Map;
 	import map.MapCamera;
 	import map.WalkingMapEntity;
@@ -18,7 +19,7 @@ package demos {
 	 * ...
 	 * @author shinobi0888
 	 */
-	public class WalkingDemo {
+	public class AvatarTest {
 		
 		public static function run(stage:Stage):void {
 			var stageCanvas:BitmapData = new BitmapData(DisplaySettings.DISP_WIDTH, DisplaySettings.DISP_HEIGHT,
@@ -31,36 +32,10 @@ package demos {
 					demoMap.drawMap(stageCanvas);
 				});
 			SpriteBase.load("link");
-			var demoWalker:CenteredWalkingMapEntity = new CenteredWalkingMapEntity(demoMap,
-				"link", 11, 2, 1);
+			var demoWalker:Avatar = new Avatar(demoMap, 11, 2);
+			demoWalker.registerKeys(stage);
+			demoWalker.enableKeys();
 			demoWalker.enableCenter();
-			var walking:Boolean = false;
-			var code:int;
-			var speed:int;
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, function(e:KeyboardEvent):void {
-					var fn:Function = function():void {
-						code = e.keyCode;
-						if (e.keyCode >= 37 && e.keyCode <= 40) {
-							demoWalker.startWalk(e.keyCode - 37, speed + 1);
-							walking = true;
-						}
-					}
-					if (e.keyCode >= 37 && e.keyCode <= 40) {
-						if (walking && e.keyCode != code) {
-							demoWalker.stopWalk(fn);
-						} else if (!walking) {
-							fn();
-						}
-					}
-				});
-			stage.addEventListener(KeyboardEvent.KEY_UP, function(e:KeyboardEvent):void {
-					if (walking && e.keyCode >= 37 && e.keyCode <= 40 && e.keyCode == code) {
-						demoWalker.stopWalk();
-						walking = false;
-					} else if (!walking && e.keyCode == 32) {
-						speed = ((speed + 1) % 4);
-					}
-				});
 			stage.addChild(stageBitmap);
 		}
 	

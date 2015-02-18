@@ -211,6 +211,23 @@ package map {
 		public function getEntitiesInLayer(layer:int):Array {
 			return layers[layer];
 		}
+		
+		/**
+		 * Attempts to search for a MapEntity at the given location on a given
+		 * layer.
+		 * @param	xPos The x position to search at.
+		 * @param	yPos The y position to search at.
+		 * @param	layer The layer to search on.
+		 * @return The found MapEntity or null.
+		 */
+		public function findEntity(xPos:int, yPos:int, layer:int):MapEntity {
+			for each (var entity:MapEntity in layers[layer]) {
+				if (entity.checkCollision(xPos, yPos)) {
+					return entity;
+				}
+			}
+			return null;
+		}
 	}
 
 }

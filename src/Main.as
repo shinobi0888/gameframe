@@ -1,5 +1,6 @@
 package {
 	import demos.AlphaDrawingTest;
+	import demos.AvatarTest;
 	import demos.CommandTest;
 	import demos.DialogueBoxTest;
 	import demos.EmbedsTest;
@@ -27,7 +28,7 @@ package {
 	public class Main extends Sprite {
 		public function Main():void {
 			Init.init(this, function():void {
-					WalkingDemo.run(stage);
+					AvatarTest.run(stage);
 					setUpFPSTimer();
 				});
 		}
