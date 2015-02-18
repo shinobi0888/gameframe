@@ -9,12 +9,13 @@ package event {
 	public class Condition {
 		private static const EQ:int = 1001;
 		private static const NEQ:int = 1002;
+		private static const TRUE:int = 1003;
+		private static const FALSE:int = 1004;
 		
 		private var commandNumber:int;
 		private var params:Array = new Array();
 		
 		public function Condition() {
-		
 		}
 		
 		/**
@@ -39,6 +40,14 @@ package event {
 				result.params[1] = StringUtil.trim(cond.substr(eqIndex + 2));
 				result.commandNumber = NEQ;
 				return result;
+			} else if (cond == "true") {
+				result = new Condition();
+				result.commandNumber = TRUE;
+				return result;
+			} else if (cond == "false") {
+				result = new Condition();
+				result.commandNumber = FALSE;
+				return result;
 			}
 			return null;
 		}
@@ -52,6 +61,12 @@ package event {
 			switch (commandNumber) {
 				case EQ:
 					return resolveText(params[0]) == resolveText(params[1]);
+				case NEQ:
+					return resolveText(params[0]) != resolveText(params[1]);
+				case TRUE:
+					return true;
+				case FALSE:
+					return false;
 				default:
 					return false;
 			}

@@ -9,6 +9,9 @@ package resource {
 			var b:ByteArray = new (Embeds.pathToClass(path) as Class)() as ByteArray;
 			return b.readUTFBytes(b.length);
 		}
+		public static function loadLineArray(path:String):Array {
+			return load(path).split("\r\n");
+		}
 	}
 
 }

@@ -41,7 +41,7 @@ package demos {
 					var fn:Function = function():void {
 						code = e.keyCode;
 						if (e.keyCode >= 37 && e.keyCode <= 40) {
-							demoWalker.startWalk(e.keyCode - 37, speed + 1);
+							demoWalker.startWalk(e.keyCode - 37, null, speed + 1);
 							walking = true;
 						}
 					}

@@ -55,7 +55,7 @@ package map {
 		 * @param	cameraY The y position of the camera.
 		 */
 		public function draw(canvas:BitmapData, cameraX:int, cameraY:int):void {
-			if (!enabled) {
+			if (!enabled || sprite == null) {
 				return;
 			}
 			var aniOffset:Point = sprite.getAnimationOffset();

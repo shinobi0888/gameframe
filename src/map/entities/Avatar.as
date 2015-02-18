@@ -5,6 +5,7 @@ package map.entities {
 	import map.CenteredWalkingMapEntity;
 	import map.Map;
 	import map.MapEntity;
+	import settings.ControlSettings;
 	
 	/**
 	 * Represents the controllable character in the game. Should only have 1.
@@ -42,7 +43,8 @@ package map.entities {
 				if (i == layer) {
 					continue;
 				}
-				possibleInteraction = containingMap.findEntity(gridX, gridY, i);
+				possibleInteraction = containingMap.findEntity(gridX + DIR_XCHANGE[dir],
+					gridY + DIR_YCHANGE[dir], i);
 				if (possibleInteraction != null && possibleInteraction != this && possibleInteraction is
 					NPC && (possibleInteraction as NPC).canActivateInspect()) {
 					(possibleInteraction as NPC).activateInspect();
@@ -82,13 +84,13 @@ package map.entities {
 		}
 		
 		private var keyHandleState:int;
-		private static const KH_WALK:int = 0;
+		private static const KH_NOBATTLE:int = 0;
 		
 		private function onKeyDown(e:KeyboardEvent):void {
 			if (keyControlEnabled) {
 				switch (keyHandleState) {
-					case KH_WALK:
-						handleWalkKeyDown(e);
+					case KH_NOBATTLE:
+						handleNoBattleKeyDown(e);
 						break;
 					default:
 						return;
@@ -99,8 +101,8 @@ package map.entities {
 		private function onKeyUp(e:KeyboardEvent):void {
 			if (keyControlEnabled) {
 				switch (keyHandleState) {
-					case KH_WALK:
-						handleWalkKeyUp(e);
+					case KH_NOBATTLE:
+						handleNoBattleKeyUp(e);
 						break;
 					default:
 						return;
@@ -109,28 +111,35 @@ package map.entities {
 		}
 		
 		// Walking controls key handling
-		private function handleWalkKeyDown(e:KeyboardEvent):void {
+		private function handleNoBattleKeyDown(e:KeyboardEvent):void {
 			if (e.keyCode >= 37 && e.keyCode <= 40) {
 				if (walking && e.keyCode - 37 != dir) {
 					stopWalk(function():void {
 							if (e.keyCode >= 37 && e.keyCode <= 40) {
-								startWalk(e.keyCode - 37);
 								walking = true;
+								startWalk(e.keyCode - 37, function():void {
+										walking = false;
+									});
 							}
 						});
 				} else if (!walking) {
 					if (e.keyCode >= 37 && e.keyCode <= 40) {
-						startWalk(e.keyCode - 37);
 						walking = true;
+						startWalk(e.keyCode - 37, function():void {
+								walking = false;
+							});
 					}
 				}
 			}
 		}
 		
-		private function handleWalkKeyUp(e:KeyboardEvent):void {
+		private function handleNoBattleKeyUp(e:KeyboardEvent):void {
 			if (walking && e.keyCode >= 37 && e.keyCode <= 40 && dir == e.keyCode - 37) {
-				stopWalk();
-				walking = false;
+				stopWalk(function():void {
+						walking = false;
+					});
+			} else if (!walking && e.keyCode == ControlSettings.BUTTON1) {
+				doInspect();
 			}
 		}
 	

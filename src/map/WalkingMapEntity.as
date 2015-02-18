@@ -30,7 +30,9 @@ package map {
 			inLoop = false;
 			inStep = false;
 			// Set idle animation
-			sprite.queueAnimation("idle_down", true);
+			if (sprite != null) {
+				sprite.queueAnimation("idle_down", true);
+			}
 		}
 		
 		/**
@@ -53,15 +55,20 @@ package map {
 		 * @param	direction The direction to attempt walking in.
 		 * @param	speed The speed of the walk animation, default being 1.
 		 */
-		public function startWalk(direction:int, speed:int = 1):void {
+		public function startWalk(direction:int, callback:Function = null, speed:int = 1):void {
 			// Check if current state allows walking
 			if (sprite.getCurrentAnimation().indexOf("idle_") == 0 && !inLoop && !inStep) {
 				if (!canWalk(direction)) {
 					sprite.terminateAnimations(0);
 					sprite.queueAnimation("idle_" + DIR_STRINGS[direction], true);
+					dir = direction;
+					if (callback != null) {
+						callback();
+					}
 					return;
 				}
 				dir = direction;
+				stopCallback = callback;
 				inLoop = true;
 				shouldStopWalk = false;
 				sprite.terminateAnimations(0);
@@ -106,6 +113,7 @@ package map {
 				if (!canWalk(direction) || steps == 0) {
 					sprite.terminateAnimations(0);
 					sprite.queueAnimation("idle_" + DIR_STRINGS[direction], true);
+					dir = direction;
 					if (callback != null) {
 						callback();
 					}

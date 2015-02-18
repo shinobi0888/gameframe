@@ -1,4 +1,6 @@
 package demos {
+	import dialogue.Dialogue;
+	import event.EventDispatcher;
 	import flash.automation.StageCapture;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -9,6 +11,7 @@ package demos {
 	import flash.utils.Timer;
 	import map.CenteredWalkingMapEntity;
 	import map.entities.Avatar;
+	import map.entities.NPC;
 	import map.Map;
 	import map.MapCamera;
 	import map.WalkingMapEntity;
@@ -30,9 +33,11 @@ package demos {
 					stageCanvas.fillRect(stageCanvas.rect, 0);
 					MapCamera.tick();
 					demoMap.drawMap(stageCanvas);
+					Dialogue.drawTick(stageCanvas);
 				});
 			SpriteBase.load("link");
 			var demoWalker:Avatar = new Avatar(demoMap, 11, 2);
+			EventDispatcher.setAvatar(demoWalker);
 			demoWalker.registerKeys(stage);
 			demoWalker.enableKeys();
 			demoWalker.enableCenter();

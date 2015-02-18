@@ -1,6 +1,7 @@
 package map {
 	import flash.display.BitmapData;
 	import flash.utils.getTimer;
+	import map.entities.NPC;
 	import mx.utils.StringUtil;
 	import resource.TextAsset;
 	import settings.DisplaySettings;
@@ -31,8 +32,9 @@ package map {
 		
 		private var width:int, height:int, widthInPixels:int, heightInPixels:int;
 		
-		private function parseMap(data:String):void {
-			var lines:Array = data.split("\n");
+		private var deps:Object;
+		
+		private function parseMap(lines:Array):void {
 			name = StringUtil.trim(lines[0]);
 			tileset = new TileSet(StringUtil.trim(lines[1]));
 			var pieces:Array = StringUtil.trim(lines[2]).split(",");
@@ -49,6 +51,38 @@ package map {
 					tileStates[i].push(0);
 				}
 			}
+			parseNPCs(lines);
+		}
+		
+		private function parseNPCs(lines:Array):void {
+			var linePos:int;
+			for (linePos = 4; lines[linePos] != "npc_section_start"; linePos++) {
+			}
+			linePos++;
+			var npcLines:Array = new Array();
+			var newNPC:NPC;
+			while (lines[linePos] != "npc_section_end") {
+				for (; lines[linePos] != "npc_entry_start"; linePos++) {
+				}
+				linePos++;
+				// Deal with parsing an NPC
+				npcLines.length = 0;
+				while (lines[linePos] != "npc_entry_end") {
+					npcLines.push(lines[linePos++]);
+				}
+				linePos++;
+				// Automatically adds to this map
+				NPC.parseNPC(this,npcLines);
+			}
+		}
+		
+		/**
+		 * Adds a loading dependency to this map. Should only be called by NPC
+		 * to set dependencies for loading and unloading map.
+		 * @param	dep The string representation of the dependency to add.
+		 */
+		public function addDependancy(dep:String):void {
+			deps[dep] = true;
 		}
 		
 		/**
@@ -61,6 +95,7 @@ package map {
 			}
 			tiles = new Array();
 			tileStates = new Array();
+			deps = new Object();
 		}
 		
 		private static var maps:Array = [new Map(), new Map(), new Map(), new Map(), new Map(), new Map()];
@@ -87,9 +122,11 @@ package map {
 			if (singleton.tileset != null) {
 				singleton.tileset.unload();
 			}
+			// TODO: unload deps
 			singleton.tiles.length = 0;
 			singleton.tileStates.length = 0;
-			singleton.parseMap(TextAsset.load("../src/assets/maps/mp_" + name + ".txt"));
+			singleton.deps = new Object();
+			singleton.parseMap(TextAsset.loadLineArray("../src/assets/maps/mp_" + name + ".txt"));
 			singleton.filename = name;
 			singleton.tileset.load();
 			maps.pop();

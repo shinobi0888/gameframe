@@ -21,15 +21,14 @@ package event {
 		 * event.
 		 * @return The BlockCommand representing the entire event.
 		 */
-		public static function parseAllCommands(commands:String):BlockCommand {
+		public static function parseAllCommands(commands:Array):BlockCommand {
 			// TODO: handle comments, multiline, etc
-			var lines:Array = commands.split("\n");
-			for (var i:int = 0; i < lines.length; i++) {
-				lines[i] = StringUtil.trim(lines[i]);
+			for (var i:int = 0; i < commands.length; i++) {
+				commands[i] = StringUtil.trim(commands[i]);
 			}
 			var result:BlockCommand = new BlockCommand();
-			while (lines.length > 0) {
-				result.addCommand(parseCommand(lines));
+			while (commands.length > 0) {
+				result.addCommand(parseCommand(commands));
 			}
 			return result;
 		}
@@ -120,11 +119,23 @@ package event {
 				case CommandConst.DLG_CHOICE:
 					Dialogue.showChoice(params[2], params[1], params[0] == null ? callback :
 						function():void {
-							SaveMem.setVar(params[0].replace(/\$/g,""), Dialogue.getChoice());
+							SaveMem.setVar(params[0].replace(/\$/g, ""), Dialogue.getChoice());
 							if (callback != null) {
 								callback();
 							}
 						});
+					break;
+				case CommandConst.AVA_DBL_CTRL:
+					e.getAvatar().disableKeys();
+					if (callback != null) {
+						callback();
+					}
+					break;
+				case CommandConst.AVA_EBL_CTRL:
+					e.getAvatar().enableKeys();
+					if (callback != null) {
+						callback();
+					}
 					break;
 				default:
 					if (callback != null) {
@@ -144,11 +155,11 @@ package event {
 				beforeText = text;
 				for (var i:int = 0; i < text.length; i++) {
 					if (text.charAt(i) == "$") {
-						var varEnd:int = text.indexOf("$", i+1);
+						var varEnd:int = text.indexOf("$", i + 1);
 						var varName:String = text.substr(i + 1, varEnd == -1 ? text.length :
 							(varEnd - (i + 1)));
 						if (SaveMem.existsVar(varName)) {
-							var afterVar:String = text.substr(varEnd+1);
+							var afterVar:String = text.substr(varEnd + 1);
 							text = text.substr(0, i) + SaveMem.getVar(varName);
 							varEnd = text.length;
 							text += afterVar;

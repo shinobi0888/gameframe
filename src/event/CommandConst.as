@@ -19,6 +19,8 @@ package event {
 		public static const DLG_LFO:int = 1008;
 		public static const DLG_RFO:int = 1009;
 		public static const DLG_CHOICE:int = 1010;
+		public static const AVA_DBL_CTRL:int = 1011;
+		public static const AVA_EBL_CTRL:int = 1012;
 		
 		public static function init(callback:Function = null):void {
 			CMD_REGEXES["dlg_start"] = /^dlg_start (.*) (.*)$/ms;
@@ -41,6 +43,10 @@ package event {
 			CMD_INDEXES["dlg_rfo"] = DLG_RFO;
 			CMD_REGEXES["dlg_choice"] = /^dlg_choice (.*)~(.*)~(.*)$/ms;
 			CMD_INDEXES["dlg_choice"] = DLG_CHOICE;
+			CMD_REGEXES["ava_dbl_ctrl"] = /^ava_dbl_ctrl$/ms;
+			CMD_INDEXES["ava_dbl_ctrl"] = AVA_DBL_CTRL;
+			CMD_REGEXES["ava_ebl_ctrl"] = /^ava_ebl_ctrl$/ms;
+			CMD_INDEXES["ava_ebl_ctrl"] = AVA_EBL_CTRL;
 			
 			if (callback != null) {
 				callback();
@@ -103,6 +109,9 @@ package event {
 					}
 					params[1] = params[1].split(";");
 					break;
+				case AVA_DBL_CTRL:
+				case AVA_EBL_CTRL:
+					break;
 				default:
 					return;
 			}
@@ -141,6 +150,9 @@ package event {
 				case DLG_RFO:
 					break;
 				case DLG_CHOICE:
+					break;
+				case AVA_DBL_CTRL:
+				case AVA_EBL_CTRL:
 					break;
 				default:
 					return;
