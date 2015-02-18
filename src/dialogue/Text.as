@@ -69,13 +69,14 @@ package dialogue {
 			spacing:int):int {
 			var total:int = int(width / fontSizes[font]) * int(height / (fontSizes[font] +
 				spacing));
+			var newLine:int = text.indexOf("\\n");
 			if (text.length <= total) {
-				return text.length;
+				return Math.min(newLine == -1 ? text.length : newLine, text.length);
 			}
 			while (!isBoundary(text, total)) {
 				total--;
 			}
-			return total;
+			return Math.min(total, newLine == -1 ? total : newLine);
 		}
 		
 		public static function linesAllowed(font:int, height:int, spacing:int):int {

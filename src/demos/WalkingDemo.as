@@ -28,6 +28,7 @@ package demos {
 			stage.addEventListener(Event.ENTER_FRAME, function(e:Event):void {
 					stageCanvas.fillRect(stageCanvas.rect, 0);
 					MapCamera.tick();
+					demoMap.processMap();
 					demoMap.drawMap(stageCanvas);
 				});
 			SpriteBase.load("link");

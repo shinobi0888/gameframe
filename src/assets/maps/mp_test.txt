@@ -16,9 +16,75 @@ null
 null
 true
 ava_dbl_ctrl
-dlg_start null null
-dlg_text TRAINER TIPS Press START to open the MENU!
-dlg_end
+dlg_text TRAINER TIPS\n\nPress START to open the MENU!
+ava_ebl_ctrl
+state_end
+npc_entry_end
+npc_entry_start
+pallet_sign_2
+9,11
+1
+nullstate_start
+false
+nullstate_end
+state_start
+2
+null
+null
+true
+ava_dbl_ctrl
+dlg_text PALLET TOWN\n\nShades of your journey await!
+ava_ebl_ctrl
+state_end
+npc_entry_end
+npc_entry_start
+pallet_sign_3
+16,16
+1
+nullstate_start
+false
+nullstate_end
+state_start
+2
+null
+null
+true
+ava_dbl_ctrl
+dlg_text OAK POKEMON RESEARCH LAB
+ava_ebl_ctrl
+state_end
+npc_entry_end
+npc_entry_start
+pallet_sign_4
+13,7
+1
+nullstate_start
+false
+nullstate_end
+state_start
+2
+null
+null
+true
+ava_dbl_ctrl
+dlg_text GARY's House
+ava_ebl_ctrl
+state_end
+npc_entry_end
+npc_entry_start
+pallet_sign_5
+4,7
+1
+nullstate_start
+false
+nullstate_end
+state_start
+2
+null
+null
+true
+ava_dbl_ctrl
+dlg_text ASH's House
 ava_ebl_ctrl
 state_end
 npc_entry_end

@@ -13,6 +13,7 @@ package map.entities {
 	 */
 	public class Avatar extends CenteredWalkingMapEntity {
 		private var keyControlEnabled:Boolean;
+		private var enableControlsOnNextTick:Boolean;
 		private var walking:Boolean;
 		
 		public function Avatar(containingMap:Map, gridX:int, gridY:int) {
@@ -69,6 +70,15 @@ package map.entities {
 			}
 		}
 		
+		override protected function processInner(time:int):void {
+			if (enableControlsOnNextTick) {
+				enableControlsOnNextTick = false;
+				keyControlEnabled = true;
+				disableProcessing();
+				needToProcess = false;
+			}
+		}
+		
 		// Key registration
 		public function registerKeys(stage:Stage):void {
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
@@ -76,7 +86,9 @@ package map.entities {
 		}
 		
 		public function enableKeys():void {
-			keyControlEnabled = true;
+			enableControlsOnNextTick = true;
+			enableProcessing();
+			needToProcess = true;
 		}
 		
 		public function disableKeys():void {
@@ -112,20 +124,20 @@ package map.entities {
 		
 		// Walking controls key handling
 		private function handleNoBattleKeyDown(e:KeyboardEvent):void {
-			if (e.keyCode >= 37 && e.keyCode <= 40) {
-				if (walking && e.keyCode - 37 != dir) {
+			if (e.keyCode >= ControlSettings.LEFT && e.keyCode <= ControlSettings.DOWN) {
+				if (walking && e.keyCode - ControlSettings.LEFT != dir) {
 					stopWalk(function():void {
-							if (e.keyCode >= 37 && e.keyCode <= 40) {
+							if (e.keyCode >= ControlSettings.LEFT && e.keyCode <= ControlSettings.DOWN) {
 								walking = true;
-								startWalk(e.keyCode - 37, function():void {
+								startWalk(e.keyCode - ControlSettings.LEFT, function():void {
 										walking = false;
 									});
 							}
 						});
 				} else if (!walking) {
-					if (e.keyCode >= 37 && e.keyCode <= 40) {
+					if (e.keyCode >= ControlSettings.LEFT && e.keyCode <= ControlSettings.DOWN) {
 						walking = true;
-						startWalk(e.keyCode - 37, function():void {
+						startWalk(e.keyCode - ControlSettings.LEFT, function():void {
 								walking = false;
 							});
 					}
@@ -134,7 +146,8 @@ package map.entities {
 		}
 		
 		private function handleNoBattleKeyUp(e:KeyboardEvent):void {
-			if (walking && e.keyCode >= 37 && e.keyCode <= 40 && dir == e.keyCode - 37) {
+			if (walking && e.keyCode >= ControlSettings.LEFT && e.keyCode <= ControlSettings.DOWN &&
+				dir == e.keyCode - ControlSettings.LEFT) {
 				stopWalk(function():void {
 						walking = false;
 					});

@@ -417,12 +417,18 @@ package dialogue {
 			var pieces:Array = new Array();
 			
 			while (message.length > 0) {
+				var cleanedMessage:String;
 				if (cut == message.length) {
-					pieces.push(message);
+					cleanedMessage = message.indexOf("\\n") == 0 ? message.substr(2) : message;
+					pieces.push(cleanedMessage);
 					break;
 				} else {
-					pieces.push(message.substr(0, cut));
+					cleanedMessage = message.substr(0, cut);
+					cleanedMessage = cleanedMessage.indexOf("\\n") == 0 ? cleanedMessage.substr(2) :
+						cleanedMessage;
+					pieces.push(cleanedMessage);
 					message = message.substr((message.charAt(cut) == " ") ? cut + 1 : cut);
+					message = message.indexOf("\\n") == 0 ? message.substr(2) : message;
 				}
 				cut = Text.cutText(FONT_INDEX, message, DBOX_TEXT_WIDTH, CELL_WIDTH + DBOX_TEXT_SPACING,
 					DBOX_TEXT_SPACING);
@@ -462,12 +468,18 @@ package dialogue {
 			var pieces:Array = new Array();
 			
 			while (message.length > 0) {
+				var cleanedMessage:String;
 				if (cut == message.length) {
-					pieces.push(message);
+					cleanedMessage = message.indexOf("\\n") == 0 ? message.substr(2) : message;
+					pieces.push(cleanedMessage);
 					break;
 				} else {
-					pieces.push(message.substr(0, cut));
+					cleanedMessage = message.substr(0, cut);
+					cleanedMessage = cleanedMessage.indexOf("\\n") == 0 ? cleanedMessage.substr(2) :
+						cleanedMessage;
+					pieces.push(cleanedMessage);
 					message = message.substr((message.charAt(cut) == " ") ? cut + 1 : cut);
+					message = message.indexOf("\\n") == 0 ? message.substr(2) : message;
 				}
 				cut = Text.cutText(FONT_INDEX, message, DBOX_TEXT_WIDTH, CELL_WIDTH + DBOX_TEXT_SPACING,
 					DBOX_TEXT_SPACING);
@@ -480,7 +492,7 @@ package dialogue {
 				}
 				message += piece;
 			}
-			message = message.replace(/[\u000d\u000a\u0008]+/g,"");
+			message = message.replace(/[\u000d\u000a\u0008]+/g, "");
 			for each (var choice:String in choices) {
 				message += "\n" + StringUtil.trim(choice);
 			}
