@@ -102,7 +102,7 @@ package resource.sprite {
 					animationParams[i] = parameters[i];
 				}
 			}
-			animationStageQueue.push(new AnimationStage(name, loop, callback));
+			animationStageQueue.push(AnimationStage.getAnimationStage(name, loop, callback));
 			if (animationStageQueue.length == 1) {
 				var currentStage:AnimationStage = animationStageQueue[0];
 				var paramNum:int = spriteBase.animations[currentStage.stageName].getParamIndex(currentStage.step);
@@ -141,7 +141,7 @@ package resource.sprite {
 						}
 						currentStage.step = 0;
 					} else {
-						animationStageQueue.shift();
+						AnimationStage.disposeAnimationStage(animationStageQueue.shift());
 						if (currentStage.callback != null) {
 							currentStage.callback();
 						}
@@ -203,10 +203,28 @@ class AnimationStage {
 	public var loop:Boolean;
 	public var callback:Function;
 	
-	public function AnimationStage(stageName:String, loop:Boolean, callback:Function) {
-		this.stageName = stageName;
-		this.loop = loop;
-		this.callback = callback;
-		this.step = 0;
+	private static var MAX_ELEMS:int = 10;
+	private static var counter:int = 0;
+	private static var pool:Vector.<AnimationStage> = new Vector.<AnimationStage>();
+	
+	public static function getAnimationStage(stageName:String, loop:Boolean, callback:Function):AnimationStage {
+		if (counter > 0) {
+			var result:AnimationStage = pool[--counter];
+			result.stageName = stageName;
+			result.loop = loop;
+			result.callback = callback;
+			result.step = 0;
+			return result;
+		}
+		var i:int = 10;
+		while (--i > -1) {
+			pool.unshift(new AnimationStage());
+		}
+		counter = 10;
+		return getAnimationStage(stageName, loop, callback);
+	}
+	
+	public static function disposeAnimationStage(animationStage:AnimationStage):void {
+		pool[counter++] = animationStage;
 	}
 }

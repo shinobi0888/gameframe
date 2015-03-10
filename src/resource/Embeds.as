@@ -14,6 +14,10 @@ package resource {
 		public static var sprites_sp_link_png:Class;
 		[Embed(source="../assets/sprites/sp_link.txt",mimeType="application/octet-stream")]
 		public static var sprites_sp_link_txt:Class;
+		[Embed(source="../assets/sprites/sp_pokeball.png")]
+		public static var sprites_sp_pokeball_png:Class;
+		[Embed(source="../assets/sprites/sp_pokeball.txt",mimeType="application/octet-stream")]
+		public static var sprites_sp_pokeball_txt:Class;
 		[Embed(source="../assets/sprites/sp_test.png")]
 		public static var sprites_sp_test_png:Class;
 		[Embed(source="../assets/sprites/sp_test.txt",mimeType="application/octet-stream")]

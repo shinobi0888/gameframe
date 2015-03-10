@@ -2,9 +2,11 @@ package map.entities {
 	import event.Command;
 	import event.Condition;
 	import event.EventDispatcher;
+	import flash.utils.getTimer;
 	import map.Map;
 	import map.WalkingMapEntity;
 	import resource.sprite.SpriteBase;
+	
 	
 	/**
 	 * ...
@@ -13,6 +15,7 @@ package map.entities {
 	public class NPC extends WalkingMapEntity {
 		protected var stateIndex:int;
 		protected var states:Array;
+		protected var name:String;
 		
 		public static function parseNPC(containingMap:Map, lines:Array):NPC {
 			var result:NPC = new NPC(containingMap, lines[0], parseInt(lines[1].split(",")[0]),
@@ -37,9 +40,12 @@ package map.entities {
 				linePos++;
 				newNPCState = new NPCState();
 				newNPCState.activationMode = parseInt(lines[linePos]);
+				linePos++;
+				newNPCState.parseMovement(lines[linePos]);
 				if (lines[linePos + 1] != "null") {
-					containingMap.addDependancy(lines[linePos + 1]);
-					newNPCState.sprite = SpriteBase.load(lines[linePos + 1]).getSpriteInstance();
+					var sb:SpriteBase = SpriteBase.load(lines[linePos + 1]);
+					containingMap.addDependancy(lines[linePos + 1], sb);
+					newNPCState.sprite = sb.getSpriteInstance();
 				} else {
 					newNPCState.sprite = null;
 				}
@@ -72,8 +78,13 @@ package map.entities {
 		public function NPC(containingMap:Map, npcName:String, gridX:int, gridY:int,
 			layer:int) {
 			super(containingMap, null, gridX, gridY, layer, null);
+			this.name = npcName;
 			stateIndex = 0;
 			states = new Array();
+		}
+		
+		public function getName():String {
+			return name;
 		}
 		
 		public function determineState():void {
@@ -87,6 +98,18 @@ package map.entities {
 			if (sprite != null) {
 				sprite.terminateAnimations(0);
 				sprite.queueAnimation(states[i].defaultSpriteAnimation);
+			}
+			// Allow processing for moving NPCs
+			if (states[i].movePattern != NPCState.MV_STILL) {
+				needToProcess = true;
+			} else {
+				needToProcess = false;
+			}
+			// Check for nullstate
+			if (stateIndex == 0) {
+				enabled = false;
+			} else {
+				enabled = true;
 			}
 		}
 		
@@ -145,10 +168,46 @@ package map.entities {
 				callback();
 			}
 		}
+		
+		override public function disableProcessing():void {
+			needToProcess = false;
+		}
+		
+		override public function enableProcessing():void {
+			needToProcess = true;
+			super.processInner(getTimer());
+		}
+		
+		override protected function processInner(time:int):void {
+			if (stateIndex != 0 && (states[stateIndex] as NPCState).movePattern == NPCState.MV_TURN &&
+				Math.random() < NPCState.MOVE_CHANCE) {
+				var randomDir:int = (states[stateIndex] as NPCState).allowedDirections[Math.floor(Math.random() *
+					(states[stateIndex] as NPCState).allowedDirections.length)];
+				setWalk(randomDir, 0);
+			} else if (stateIndex != 0 && (states[stateIndex] as NPCState).movePattern ==
+				NPCState.MV_WALK && Math.random() < NPCState.MOVE_CHANCE) {
+				var allowedWalkingDirections:Array = new Array();
+				for (var possibleDir:int = 0; possibleDir < 4; possibleDir++) {
+					var randomX:int = gridX + DIR_XCHANGE[possibleDir];
+					var randomY:int = gridY + DIR_YCHANGE[possibleDir];
+					for (var i:int = 0; i < (states[stateIndex] as NPCState).allowedTiles.length; i += 2) {
+						if ((states[stateIndex] as NPCState).allowedTiles[i] == randomX && (states[stateIndex] as
+							NPCState).allowedTiles[i + 1] == randomY) {
+							allowedWalkingDirections.push(possibleDir);
+							break;
+						}
+					}
+				}
+				randomDir = allowedWalkingDirections[Math.floor(Math.random() * allowedWalkingDirections.length)];
+				setWalk(randomDir, 1);
+			}
+			super.processInner(time);
+		}
 	}
 }
 import event.BlockCommand;
 import event.Condition;
+import flash.geom.Point;
 import resource.sprite.Sprite;
 
 class NPCState {
@@ -163,4 +222,36 @@ class NPCState {
 	public var cond:Condition;
 	public var cmd:BlockCommand;
 	public var activationMode:int;
+	
+	// Passive movement patterns
+	public var movePattern:int;
+	public var allowedTiles:Array;
+	public var allowedDirections:Array;
+	
+	public static const MV_STILL:int = 0;
+	public static const MV_TURN:int = 1;
+	public static const MV_WALK:int = 2;
+	
+	public static const MOVE_CHANCE:Number = 0.7;
+	
+	public function parseMovement(moveString:String):void {
+		var pieces:Array = moveString.split(" ");
+		if (pieces[0] == "still") {
+			movePattern = MV_STILL;
+		} else if (pieces[0] == "turn") {
+			movePattern = MV_TURN;
+			allowedDirections = new Array();
+			for (var i:int = 1; i < pieces.length; i++) {
+				allowedDirections.push(parseInt(pieces[i]));
+			}
+		} else if (pieces[0] == "walk") {
+			movePattern = MV_WALK;
+			allowedTiles = new Array();
+			for (i = 1; i < pieces.length; i++) {
+				var commaIndex:int = pieces[i].indexOf(",");
+				allowedTiles.push(parseInt(pieces[i].substr(0, commaIndex)), parseInt(pieces[i].substr(commaIndex +
+					1)));
+			}
+		}
+	}
 }

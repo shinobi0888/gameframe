@@ -1,5 +1,25 @@
 package event {
 	import dialogue.Dialogue;
+	import event.command.CmdAvaDisableCtrl;
+	import event.command.CmdAvaEnableCtrl;
+	import event.command.CmdDialogChoice;
+	import event.command.CmdDialogEnd;
+	import event.command.CmdDialogLfc;
+	import event.command.CmdDialogLfi;
+	import event.command.CmdDialogLfo;
+	import event.command.CmdDialogRfc;
+	import event.command.CmdDialogRfi;
+	import event.command.CmdDialogRfo;
+	import event.command.CmdDialogStart;
+	import event.command.CmdDialogText;
+	import event.command.CmdNpcAnimSync;
+	import event.command.CmdNpcDisableProcess;
+	import event.command.CmdNpcEnableProcess;
+	import event.command.CmdNpcTurnToAvatar;
+	import event.command.CmdNpcUpdate;
+	import event.command.CmdVarSet;
+	import map.entities.NPC;
+	import map.MapEntity;
 	import mx.utils.StringUtil;
 	import resource.SaveMem;
 	
@@ -8,8 +28,19 @@ package event {
 	 * @author shinobi0888
 	 */
 	public class Command {
-		private var commandNumber:int;
-		private var params:Array = new Array();
+		protected static var COMMAND_MAP:Object = new Object();
+		
+		protected var params:Array = new Array();
+		
+		public static function init(callback:Function = null):void {
+			var ALL_COMMANDS:Array = [CmdAvaDisableCtrl, CmdAvaEnableCtrl, CmdDialogChoice, CmdDialogEnd, CmdDialogLfc, CmdDialogLfi, CmdDialogLfo, CmdDialogRfc, CmdDialogRfi, CmdDialogRfo, CmdDialogStart, CmdDialogText, CmdNpcAnimSync, CmdNpcDisableProcess, CmdNpcEnableProcess, CmdNpcTurnToAvatar, CmdNpcUpdate, CmdVarSet];
+			for each (var commandClass:Class in ALL_COMMANDS) {
+				COMMAND_MAP[commandClass.TAGNAME] = commandClass;
+			}
+			if (callback != null) {
+				callback();
+			}
+		}
 		
 		public function Command() {
 		}
@@ -73,75 +104,32 @@ package event {
 			var space:int = headString.indexOf(" ");
 			var headCommand:String = headString.substr(0, space == -1 ? headString.length :
 				space);
-			if (!CommandConst.CMD_INDEXES.hasOwnProperty(headCommand)) {
+			if (!COMMAND_MAP.hasOwnProperty(headCommand)) {
 				trace("BAD COMMAND: " + headCommand);
 				return null;
 			}
-			var result:Command = new Command();
-			result.commandNumber = CommandConst.CMD_INDEXES[headCommand];
-			result.params = headString.match(CommandConst.CMD_REGEXES[headCommand]);
+			var result:Command = new (COMMAND_MAP[headCommand] as Class)();
+			result.params = headString.match(COMMAND_MAP[headCommand].REGEX);
 			if (result.params != null) {
 				result.params.shift();
-				CommandConst.cleanParams(result.commandNumber, result.params);
+				result.cleanParams();
 			}
 			return result;
 		}
 		
+		public function cleanParams():void {
+		}
+		
 		public function execute(e:EventDispatcher, callback:Function = null):void {
-			switch (commandNumber) {
-				case CommandConst.DLG_START:
-					Dialogue.start(resolveText(params[0]), resolveText(params[1]), callback);
-					break;
-				case CommandConst.DLG_END:
-					Dialogue.end(callback);
-					break;
-				case CommandConst.DLG_TEXT:
-					Dialogue.showText(resolveText(params[0]), callback);
-					break;
-				case CommandConst.DLG_LFI:
-					Dialogue.leftFadeIn(resolveText(params[0]), callback);
-					break;
-				case CommandConst.DLG_RFI:
-					Dialogue.rightFadeIn(resolveText(params[0]), callback);
-					break;
-				case CommandConst.DLG_LFC:
-					Dialogue.leftFadeCross(resolveText(params[0]), callback);
-					break;
-				case CommandConst.DLG_RFC:
-					Dialogue.rightFadeCross(resolveText(params[0]), callback);
-					break;
-				case CommandConst.DLG_LFO:
-					Dialogue.leftFadeOut(callback);
-					break;
-				case CommandConst.DLG_RFO:
-					Dialogue.rightFadeOut(callback);
-					break;
-				case CommandConst.DLG_CHOICE:
-					Dialogue.showChoice(params[2], params[1], params[0] == null ? callback :
-						function():void {
-							SaveMem.setVar(params[0].replace(/\$/g, ""), Dialogue.getChoice());
-							if (callback != null) {
-								callback();
-							}
-						});
-					break;
-				case CommandConst.AVA_DBL_CTRL:
-					e.getAvatar().disableKeys();
-					if (callback != null) {
-						callback();
-					}
-					break;
-				case CommandConst.AVA_EBL_CTRL:
-					e.getAvatar().enableKeys();
-					if (callback != null) {
-						callback();
-					}
-					break;
-				default:
-					if (callback != null) {
-						callback();
-					}
-			}
+		}
+		
+		/**
+		 * Adds all dependencies of this command and all subcommands
+		 * into the dependency set.
+		 * @param	deps A set of dependencies (mapped to by key) that will
+		 * be added to.
+		 */
+		public function addDependencies(deps:Object):void {
 		}
 		
 		/**
@@ -149,7 +137,7 @@ package event {
 		 * @param	text The text to resolve.
 		 * @return The resolved text, with variables swapped out.
 		 */
-		private function resolveText(text:String):String {
+		protected function resolveText(text:String):String {
 			var beforeText:String = null;
 			while (beforeText != text) {
 				beforeText = text;
@@ -169,16 +157,6 @@ package event {
 				}
 			}
 			return text;
-		}
-		
-		/**
-		 * Adds all dependencies of this command and all subcommands
-		 * into the dependency set.
-		 * @param	deps A set of dependencies (mapped to by key) that will
-		 * be added to.
-		 */
-		public function addDependencies(deps:Object):void {
-			CommandConst.addDependencies(deps, commandNumber, params);
 		}
 	}
 

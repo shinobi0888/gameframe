@@ -82,6 +82,10 @@ package map {
 			this.layer = layer;
 		}
 		
+		public function getContainingMap():Map {
+			return containingMap;
+		}
+		
 		public function setLayer(layer:int):void {
 			this.layer = layer;
 		}
@@ -140,6 +144,18 @@ package map {
 				}
 			}
 			return false;
+		}
+		
+		/**
+		 * Forces the immediate animation of a parameterless sequence.
+		 * @param	name The animation sequence to play.
+		 * @param	callback The callback function, if any.
+		 */
+		public function queueAnimationImmediateSync(name:String, callback:Function=null):void {
+			if (sprite != null) {
+				sprite.terminateAnimations();
+				sprite.queueAnimation(name, false, null, callback);
+			}
 		}
 		
 		/**

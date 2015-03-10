@@ -77,7 +77,7 @@ package event {
 		 * @param	text The text to resolve.
 		 * @return The resolved text, with variables swapped out.
 		 */
-		private function resolveText(text:String):String {
+		private function resolveText(text:String):Object {
 			for (var i:int = 0; i < text.length; i++) {
 				if (text.charAt(i) == "$") {
 					var varEnd:int = text.indexOf("$", i + 1);
@@ -91,6 +91,11 @@ package event {
 					}
 					i = varEnd;
 				}
+			}
+			if (text == "true" || text == "false") {
+				return text == "true";
+			} else if (!isNaN(Number(text))) {
+				return parseInt(text);
 			}
 			return text;
 		}

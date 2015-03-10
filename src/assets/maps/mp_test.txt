@@ -12,6 +12,7 @@ false
 nullstate_end
 state_start
 2
+still
 null
 null
 true
@@ -29,6 +30,7 @@ false
 nullstate_end
 state_start
 2
+still
 null
 null
 true
@@ -46,6 +48,7 @@ false
 nullstate_end
 state_start
 2
+still
 null
 null
 true
@@ -63,6 +66,7 @@ false
 nullstate_end
 state_start
 2
+still
 null
 null
 true
@@ -80,11 +84,54 @@ false
 nullstate_end
 state_start
 2
+still
 null
 null
 true
 ava_dbl_ctrl
 dlg_text ASH's House
+ava_ebl_ctrl
+state_end
+npc_entry_end
+npc_entry_start
+pallet_test_pokeball_1
+11,7
+2
+nullstate_start
+$pallet_test_pokeball_1$ == false
+nullstate_end
+state_start
+2
+still
+pokeball
+idle
+true
+ava_dbl_ctrl
+dlg_text This is a disappearing Pokeball!
+var_set $pallet_test_pokeball_1$~false
+npc_anim_sync fade
+npc_update
+ava_ebl_ctrl
+state_end
+npc_entry_end
+npc_entry_start
+pallet_test_clone_1
+11,9
+2
+nullstate_start
+false
+nullstate_end
+state_start
+2
+walk 11,10 11,8 11,9 10,9 12,9
+link
+idle_down
+true
+ava_dbl_ctrl
+npc_dbl_prcs
+npc_trn_ava
+dlg_text Hi. I am a turning NPC. Watch as I walk around randomly!
+npc_ebl_prcs
 ava_ebl_ctrl
 state_end
 npc_entry_end

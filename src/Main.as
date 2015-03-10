@@ -9,7 +9,6 @@ package {
 	import demos.TextTest;
 	import demos.TileSetBasicDemo;
 	import demos.WalkingDemo;
-	import event.CommandConst;
 	import flash.display.Sprite;
 	import demos.BitmapCopyTest;
 	import flash.events.Event;

@@ -2,7 +2,6 @@ package resource {
 	import dialogue.Dialogue;
 	import dialogue.Text;
 	import event.Command;
-	import event.CommandConst;
 	import flash.events.KeyboardEvent;
 	import flash.utils.getDefinitionByName;
 	import map.MapCamera;
@@ -22,7 +21,7 @@ package resource {
 		}
 		
 		private static function initStatics(main:Main, callback:Function = null):void {
-			var loadClasses:Array = [CommandConst, Pattern, Dialogue, Text, MapCamera, SaveMem];
+			var loadClasses:Array = [Command, Pattern, Dialogue, Text, MapCamera, SaveMem];
 			var initFn:Function = function():void {
 				if (loadClasses.length == 0) {
 					if (callback != null) {

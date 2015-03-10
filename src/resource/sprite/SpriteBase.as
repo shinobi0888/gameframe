@@ -20,7 +20,7 @@ package resource.sprite {
 			}
 			var spriteImagePath:String = "../src/assets/sprites/sp_" + spriteName + ".png";
 			Image.loadImage(spriteImagePath);
-			loadedBases[spriteName] = new SpriteBase(spriteImagePath, TextAsset.load("../src/assets/sprites/sp_" +
+			loadedBases[spriteName] = new SpriteBase(spriteName, spriteImagePath, TextAsset.load("../src/assets/sprites/sp_" +
 				spriteName + ".txt"));
 			return loadedBases[spriteName];
 		}
@@ -47,17 +47,23 @@ package resource.sprite {
 		}
 		
 		// Start of instance based code
+		public var spriteName:String;
 		public var spriteSheet:String;
 		public var animations:Object;
 		public var width:int, height:int, center:Point, drawCorner:Point;
 		public var sheetWidth:int, sheetHeight:int;
 		
-		public function SpriteBase(spriteSheet:String, data:String) {
+		public function SpriteBase(spriteName:String, spriteSheet:String, data:String) {
+			this.spriteName = spriteName;
 			this.spriteSheet = spriteSheet;
 			animations = new Object();
 			parseData(data);
 			sheetWidth = int(Image.iWidth(spriteSheet) / width);
 			sheetHeight = int(Image.iHeight(spriteSheet) / height);
+		}
+		
+		public function unload():void {
+			SpriteBase.unload(spriteName);
 		}
 		
 		public function getSpriteInstance():Sprite {

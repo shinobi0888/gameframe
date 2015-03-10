@@ -13,7 +13,7 @@ package map {
 		public static const RIGHT:int = 2;
 		public static const DOWN:int = 3;
 		public static const LEFT:int = 0;
-		private static const DIR_STRINGS:Array = ["left", "up", "right", "down"];
+		protected static const DIR_STRINGS:Array = ["left", "up", "right", "down"];
 		protected static const DIR_XCHANGE:Array = [-1, 0, 1, 0];
 		protected static const DIR_YCHANGE:Array = [0, -1, 0, 1];
 		
@@ -135,6 +135,30 @@ package map {
 						}
 					});
 			}
+		}
+		
+		/**
+		 * Turns the entity in the direction of the specified location.
+		 * @param	xPos The x position of the direction to turn towards.
+		 * @param	yPos The y position of the direction to turn towards.
+		 * @param	speed The speed of the walk, default 1.
+		 * @param	callback An optional callback to perform at the end of the turn.
+		 */
+		public function turnTowards(xPos:int, yPos:int, speed:int = 1, callback:Function = null):void {
+			if (xPos == gridX && yPos == gridY) {
+				return;
+			}
+			var deltaX:int = xPos - gridX;
+			var deltaY:int = yPos - gridY;
+			var deltaXMag:int = Math.abs(deltaX);
+			var deltaYMag:int = Math.abs(deltaY);
+			var turnDir:int = 0;
+			if (deltaXMag > deltaYMag) {
+				turnDir = deltaX < 0 ? LEFT : RIGHT;
+			} else {
+				turnDir = deltaY < 0 ? UP : DOWN;
+			}
+			setWalk(turnDir, 0, speed, callback);
 		}
 		
 		/**

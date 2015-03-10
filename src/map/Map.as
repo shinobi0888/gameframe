@@ -3,6 +3,7 @@ package map {
 	import flash.utils.getTimer;
 	import map.entities.NPC;
 	import mx.utils.StringUtil;
+	import resource.Image;
 	import resource.TextAsset;
 	import settings.DisplaySettings;
 	
@@ -72,17 +73,17 @@ package map {
 				}
 				linePos++;
 				// Automatically adds to this map
-				NPC.parseNPC(this,npcLines);
+				NPC.parseNPC(this, npcLines);
 			}
 		}
 		
 		/**
 		 * Adds a loading dependency to this map. Should only be called by NPC
 		 * to set dependencies for loading and unloading map.
-		 * @param	dep The string representation of the dependency to add.
+		 * @param	dep The dependancy to add
 		 */
-		public function addDependancy(dep:String):void {
-			deps[dep] = true;
+		public function addDependancy(key:String, dep:Object):void {
+			deps[key] = dep;
 		}
 		
 		/**
@@ -122,11 +123,20 @@ package map {
 			if (singleton.tileset != null) {
 				singleton.tileset.unload();
 			}
-			// TODO: unload deps
+			// Unload dependencies
+			for (var depKey:String in singleton.deps) {
+				var dep:Object = singleton.deps[depKey];
+				if (dep is String && (dep as String).indexOf(".png") != -1) {
+					Image.unloadImage(dep as String);
+				} else {
+					dep.unload();
+				}
+			}
 			singleton.tiles.length = 0;
 			singleton.tileStates.length = 0;
 			singleton.deps = new Object();
-			singleton.parseMap(TextAsset.loadLineArray("../src/assets/maps/mp_" + name + ".txt"));
+			singleton.parseMap(TextAsset.loadLineArray("../src/assets/maps/mp_" + name +
+				".txt"));
 			singleton.filename = name;
 			singleton.tileset.load();
 			maps.pop();
@@ -261,6 +271,22 @@ package map {
 			for each (var entity:MapEntity in layers[layer]) {
 				if (entity.checkCollision(xPos, yPos)) {
 					return entity;
+				}
+			}
+			return null;
+		}
+		
+		/**
+		 * Attempts to search for an NPC with a given name.
+		 * @param	name The name of the NPC.
+		 * @return The found NPC or null.
+		 */
+		public function findNPC(name:String):NPC {
+			for (var layer:int = 0; layer <= L_AIR; layer++) {
+				for each (var entity:MapEntity in layers[layer]) {
+					if (entity is NPC && (entity as NPC).getName() == name) {
+						return (entity as NPC);
+					}
 				}
 			}
 			return null;
